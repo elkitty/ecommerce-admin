@@ -1,46 +1,42 @@
 "use client"
-import * as z from "zod";
+
+import * as z from "zod"
 import axios from "axios"
-import { Billboard } from "@prisma/client";
-import { Trash } from "lucide-react";
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { ApiAlert } from "@/components/ui/api-alert"
+import { toast } from "react-hot-toast"
+import { Trash } from "lucide-react"
+import { Billboard } from "@prisma/client"
+import { useParams, useRouter } from "next/navigation"
 
-
-import { Heading } from "@/components/ui/heading"
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button"
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from "@/components/ui/form"
-import { zodResolver } from "@hookform/resolvers/zod";
-import toast from "react-hot-toast";
-import { AlertModal } from "@/components/modals/alert-modal";
-import { useOrigin } from "@/hooks/use-origin";
-import ImageUpload from "@/components/ui/image-upload";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Separator } from "@/components/ui/separator"
+import { Heading } from "@/components/ui/heading"
+import { AlertModal } from "@/components/modals/alert-modal"
+import ImageUpload from "@/components/ui/image-upload"
 
 const formSchema = z.object({ label: z.string().min(1), imageUrl: z.string().min(1)});
+
+type BillboardFormValues = z.infer<typeof formSchema>;
 
 interface BillboardFormProps {
     initialData: Billboard | null;
 }
 
-type BillboardFormValues = z.infer<typeof formSchema>;
-
-
-export const SettingsForm: React.FC<BillboardFormProps> = ({ initialData }) => {
+export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
   const params = useParams();
   const router = useRouter();
-  const origin = useOrigin();
-
+  
   const [ open, setOpen ] = useState(false);
   const [ loading, setLoading ] = useState(false); 
 
@@ -60,29 +56,30 @@ export const SettingsForm: React.FC<BillboardFormProps> = ({ initialData }) => {
 
   const onSubmit = async (data: BillboardFormValues) => {
     try {
-        setLoading(true);
-        if (initialData) {
-          await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
-        } else {
-          await axios.post(`/api/${params.storeId}/billboards`, data);
-        }
-        router.refresh();
-        toast.success(toastMessage)
-    } catch(error) {
-        toast.error("Something went wrong.")
+      setLoading(true);
+      if (initialData) {
+        await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
+      } else {
+        await axios.post(`/api/${params.storeId}/billboards`, data);
+      }
+      router.refresh();
+      router.push(`/${params.storeId}/billboards`);
+      toast.success(toastMessage);
+    } catch (error: any) {
+      toast.error('Something went wrong.');
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-  }
+  };
   
   const onDelete = async () => {
     try {
       setLoading(true)
-      await axios.delete(`/api/${params.storeId}/${params.billboardId}`)
+      await axios.delete(`/api/${params.storeId}/billboards/${params.billboardId}`)
       router.refresh();
-      router.push("/");
+      router.push(`/${params.storeId}/billboards`);
       toast.success("Billboard deleted.")
-    } catch ( error ) {
+    } catch ( error: any ) {
       toast.error("Make sure you removed all categories using this billboard first.") 
       } finally {
         setLoading(false)
@@ -129,7 +126,7 @@ export const SettingsForm: React.FC<BillboardFormProps> = ({ initialData }) => {
                           value={field.value ? [field.value] : []}
                           disabled={loading}
                           onChange={(url) => field.onChange(url)}
-                          onRemove={() => field.onChange("")}
+                          onRemove={() => field.onChange('')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -160,9 +157,8 @@ export const SettingsForm: React.FC<BillboardFormProps> = ({ initialData }) => {
           </Button>
         </form>
       </Form>
-      <Separator/>
     </>
     )
 };
 
-export default SettingsForm;
+

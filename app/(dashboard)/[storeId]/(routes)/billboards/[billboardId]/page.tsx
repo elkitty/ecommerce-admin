@@ -1,7 +1,8 @@
 import prismadb from "@/lib/prismadb";
-import BillboardForm from "./components/billboard-form";
 
-const BillboardsPage =  async ({ params }: {params: {billboardId: string }}) => {
+import { BillboardForm } from "./components/billboard-form";
+
+const BillboardPage =  async ({ params }: {params: {billboardId: string }}) => {
 
     const billboard = await prismadb.billboard.findUnique({
         where: {
@@ -19,4 +20,4 @@ const BillboardsPage =  async ({ params }: {params: {billboardId: string }}) => 
     )
 }
 
-export default BillboardsPage;
+export default BillboardPage;
