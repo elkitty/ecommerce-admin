@@ -32,7 +32,7 @@ export default function StoreSwitcher({ className, items = [] }: StoreSwitcherPr
 
     const [ open, setOpen ] = useState(false);
 
-    const onStoreSelect = (store: { value: string, lable: string}) => {
+    const onStoreSelect = (store: { value: string, lab: string}) => {
         setOpen(false);
         router.push(`/${store.value}`);
     } 
